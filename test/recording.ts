@@ -11,7 +11,6 @@ export function setupProjectRecording(
   input: Omit<SetupRecordingInput, 'mutateEntry'>,
 ): Recording {
   return setupRecording({
-    ...input,
     redactedRequestHeaders: ['Authorization'],
     redactedResponseHeaders: ['set-cookie'],
     mutateEntry: mutations.unzipGzippedRecordingEntry,
@@ -22,6 +21,7 @@ export function setupProjectRecording(
         },
       },
     },
+    ...input,
   });
 }
 
