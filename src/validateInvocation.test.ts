@@ -73,6 +73,7 @@ describe('#validateInvocation', () => {
         // tests validate that invalid configurations throw an error
         // with an appropriate and expected message.
         const regEx =
+          // eslint-disable-next-line no-useless-escape
           /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\/cjoc/g;
         expect(integrationConfig.hostname).not.toMatch(regEx);
       });
