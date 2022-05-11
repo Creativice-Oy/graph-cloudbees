@@ -1,4 +1,4 @@
-import fetch from 'node-fetch';
+import fetch, { Response } from 'node-fetch';
 import {
   IntegrationProviderAPIError,
   IntegrationProviderAuthenticationError,
@@ -28,6 +28,14 @@ export type ResourceIteratee<T> = (each: T) => Promise<void> | void;
 export class APIClient {
   constructor(readonly config: IntegrationConfig) {}
 
+  private checkStatus = (response: Response) => {
+    if (response.ok) {
+      return response;
+    } else {
+      throw new IntegrationProviderAPIError(response);
+    }
+  };
+
   private withBaseUri = (path: string): string =>
     `${this.config.hostname}${path}`;
 
@@ -45,7 +53,9 @@ export class APIClient {
       // Handle rate-limiting
       const response = await retry(
         async () => {
-          return await fetch(uri, options);
+          const res: Response = await fetch(uri, options);
+          this.checkStatus(res);
+          return res;
         },
         {
           delay: 5000,
@@ -66,8 +76,8 @@ export class APIClient {
     } catch (err) {
       throw new IntegrationProviderAPIError({
         endpoint: uri,
-        status: err.status,
-        statusText: err.statusText,
+        status: err.status || err.type,
+        statusText: err.statusText || err.code,
       });
     }
   }

@@ -54,7 +54,7 @@ describe('#validateInvocation', () => {
      * error messaging is expected and clear to end-users
      */
     describe('invalid user credentials', () => {
-      test.skip('should throw if clientId is invalid', async () => {
+      test('should throw if hostname is invalid', () => {
         recording = setupProjectRecording({
           directory: __dirname,
           name: 'client-id-auth-error',
@@ -62,6 +62,35 @@ describe('#validateInvocation', () => {
           // and `recordFailedRequest: true` is needed to capture these responses
           options: {
             recordFailedRequests: true,
+            matchRequestsBy: {
+              url: {
+                hostname: false,
+              },
+            },
+          },
+        });
+
+        // tests validate that invalid configurations throw an error
+        // with an appropriate and expected message.
+        const regEx =
+          // eslint-disable-next-line no-useless-escape
+          /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\/cjoc/g;
+        expect(integrationConfig.hostname).not.toMatch(regEx);
+      });
+
+      test.skip('should throw if userId is invalid', async () => {
+        recording = setupProjectRecording({
+          directory: __dirname,
+          name: 'user-id-auth-error',
+          // Many authorization failures will return non-200 responses
+          // and `recordFailedRequest: true` is needed to capture these responses
+          options: {
+            recordFailedRequests: true,
+            matchRequestsBy: {
+              url: {
+                hostname: false,
+              },
+            },
           },
         });
 
@@ -73,19 +102,23 @@ describe('#validateInvocation', () => {
           },
         });
 
-        // tests validate that invalid configurations throw an error
-        // with an appropriate and expected message.
-        await expect(validateInvocation(executionContext)).rejects.toThrow(
-          'Provider authentication failed at https://localhost/api/v1/some/endpoint?limit=1: 401 Unauthorized',
+        expect.assertions(1);
+        await validateInvocation(executionContext).catch((err) =>
+          expect(err.status).toBe(401),
         );
       });
 
-      test.skip('should throw if clientSecret is invalid', async () => {
+      test.skip('should throw if apiKey is invalid', async () => {
         recording = setupProjectRecording({
           directory: __dirname,
-          name: 'client-secret-auth-error',
+          name: 'api-key-auth-error',
           options: {
             recordFailedRequests: true,
+            matchRequestsBy: {
+              url: {
+                hostname: false,
+              },
+            },
           },
         });
 
@@ -97,8 +130,9 @@ describe('#validateInvocation', () => {
           },
         });
 
-        await expect(validateInvocation(executionContext)).rejects.toThrow(
-          'Provider authentication failed at https://localhost/api/v1/some/endpoint?limit=1: 401 Unauthorized',
+        expect.assertions(1);
+        await validateInvocation(executionContext).catch((err) =>
+          expect(err.status).toBe(401),
         );
       });
     });

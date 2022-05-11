@@ -3,7 +3,7 @@
 This integration focuses on Cloudbees CI and is using
 [Cloudbees CI API](https://docs.cloudbees.com/docs/cloudbees-ci-api/latest/api-authentication)
 and [Jenkins API](https://www.jenkins.io/doc/book/using/remote-access-api/) for
-interacting with the Hexnode resources.
+interacting with the Cloudbees CI resources.
 
 ## Prerequisites
 
